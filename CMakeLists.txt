@@ -17,6 +17,12 @@ include_directories(
 	include
 )
 
+add_library(crypto_utils src/crypto_utils.cpp)
+ament_target_dependencies(crypto_utils rclcpp std_msgs)
+target_include_directories(crypto_utils PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<INSTALL_INTERFACE:include>)
+
 add_executable(publisher_node src/publisher_node.cpp)
 ament_target_dependencies(publisher_node rclcpp std_msgs)
 target_include_directories(publisher_node PUBLIC
@@ -28,17 +34,20 @@ ament_target_dependencies(encryption_node rclcpp std_msgs)
 target_include_directories(encryption_node PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
+target_link_libraries(encryption_node crypto_utils)
 
 add_executable(decryption_node src/decryption_node.cpp)
 ament_target_dependencies(decryption_node rclcpp std_msgs)
 target_include_directories(decryption_node PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>)
+target_link_libraries(decryption_node crypto_utils)
 
 install(TARGETS
 	publisher_node
 	encryption_node
 	decryption_node
+	crypto_utils
 	DESTINATION lib/${PROJECT_NAME}
 )
 
