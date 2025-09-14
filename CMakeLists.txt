@@ -7,9 +7,51 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+include_directories(
+	include
+)
+
+add_executable(publisher_node src/publisher_node.cpp)
+ament_target_dependencies(publisher_node rclcpp std_msgs)
+target_include_directories(publisher_node PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<INSTALL_INTERFACE:include>)
+
+add_executable(encryption_node src/encryption_node.cpp)
+ament_target_dependencies(encryption_node rclcpp std_msgs)
+target_include_directories(encryption_node PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+
+add_executable(decryption_node src/decryption_node.cpp)
+ament_target_dependencies(decryption_node rclcpp std_msgs)
+target_include_directories(decryption_node PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
+
+install(TARGETS
+	publisher_node
+	encryption_node
+	decryption_node
+	DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+	launch
+	DESTINATION share/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+	include/
+	DESTINATION include/
+)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
